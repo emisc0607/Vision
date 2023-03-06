@@ -95,3 +95,105 @@ def promedio(img, h, w):
 #def mediana
 
 #def moda
+
+def histograma(img, h, w):
+    gris  = np.zeros((h,w), dtype=np.uint8)
+    gris = grises(img, h, w)
+    hist = np.zeros(256)
+    for i in range(0, h):
+        for j in range(0, w):
+            a = gris[i,j]
+            hist[a] += 1;
+    return hist
+
+def ecualizacion(img, h, w):
+    gris = np.zeros((h,w), dtype=np.uint8)
+    gris = grises(img, h, w)
+    hist = histograma(img, h, w)
+    sk = np.zeros(256)
+    vk = np.zeros(256)
+    sk[0] = hist[0]
+
+    for i in range(1, 256):
+        sk[i] = hist[i] + sk[i-1]
+    skmax = sk[255]
+    ban = 0
+    skmin = 0
+    
+    for i in range(0, 256):
+        if(ban == 0):
+            if(sk[i] != 0):
+                skmin = sk[i]
+                ban = 1
+
+    for i in range(0, 256):
+        vk[i] = round(255*(sk[i]-skmin)/(skmax-skmin))
+
+    for i in range(0, h):
+        for j in range(0, w):
+            a = gris[i,j]
+            gris[i, j] = vk[a]
+
+    return gris
+
+def histograma_color(img, h, w):
+    sk = np.zeros(256)
+    vk = np.zeros(256)
+    hist= np.zeros(256)
+    for i in range(0, h):
+        for j in range(0, w):
+            a = img[i,j]
+            hist[a] += 1;
+    
+    sk[0] = hist[0]
+    for i in range(1, 256):
+        sk[i] = hist[i] + sk[i-1]
+
+    skmax = sk[255]
+    ban = 0
+    skmin = 0 
+    for i in range(0, 256):
+        if(ban == 0):
+            if(sk[i] != 0):
+                skmin = sk[i]
+                ban = 1
+
+    for i in range(0, 256):
+        vk[i] = round(255*(sk[i]-skmin)/(skmax-skmin))
+
+    for i in range(0, h):
+        for j in range(0, w):
+            a = img[i,j]
+            img[i, j] = vk[a] 
+
+    return img
+
+def ecualizar_color(img):
+    h, w, c = img.shape
+    b = img[:, :, 0]
+    g = img[:, :, 1]
+    r = img[:, :, 2]
+    color = np.zeros((h,w,3), dtype=np.uint8)
+    hist_c = histograma_color(b, h, w)
+    color[:, :, 0] = hist_c[:, :]
+    hist_c = histograma_color(g, h, w)
+    color[:, :, 1] = hist_c[:, :]
+    hist_c = histograma_color(r, h, w)
+    color[:, :, 2] = hist_c[:, :]
+    return color
+
+def camara_web():
+    video = cv2.VideoCapture(0)
+    ban, frame = video.read()
+    if(ban != 0):
+        print("Camara detectada")
+    else: 
+        print("No se puede acceder a la camara")
+    while(video.isOpened()):
+        ban, frame = video.read()
+        cv2.imshow("Imagen de la camara", frame)
+        if(cv2.waitKey(1) & 0xFF == ord('c')):
+            break
+    video.release()
+    cv2.destroyAllWindows()
+    return frame

@@ -15,14 +15,7 @@ def abrir_img():
     if (len(ruta_img) > 0):
         print(str(ruta_img))
         img = cv2.imread(ruta_img)
-        h, c, w= img.shape
-        print(str(h) + ' ' + str(w) + ' ' + str(c))
-        img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img2 = cv2.resize(img2, (320, 240))
-        im = Image.fromarray(img2)
-        img1 = ImageTk.PhotoImage(image = im)
-        img_in.configure(image=img1)
-        img_in.image = img1
+        show_in(img)
 
 ####    Opcion con OpenCV
 
@@ -36,6 +29,16 @@ def abrir_img():
 ####    End
     else:
         print("No hay imagen para mostrar")
+
+def show_in(img):
+    h, c, w= img.shape
+    print(str(h) + ' ' + str(w) + ' ' + str(c))
+    img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img2 = cv2.resize(img2, (320, 240))
+    im = Image.fromarray(img2)
+    img1 = ImageTk.PhotoImage(image = im)
+    img_in.configure(image=img1)
+    img_in.image = img1
 
 def gris():
     global img
@@ -99,6 +102,21 @@ def filtro_promedio():
     out = fn.promedio(img, h, w)
     show_out(out.astype(np.uint8)) 
 
+def ecualizar():
+    global img
+    h, w, c = img.shape
+    out = fn.ecualizacion(img, h, w)
+    show_out(out) 
+
+def ecu_color():
+    global img
+    out = fn.ecualizar_color(img)
+    show_out(out) 
+
+def camara():
+    global img
+    img = fn.camara_web()
+    show_in(img)
 
 vn = tk.Tk()
 vn.title("Vision - Maestria")
@@ -120,8 +138,11 @@ menu_funciones.add_command(label = "Resta", command = sustraction)
 menu_funciones.add_command(label = "Multiplicacion", command = multiplica)
 menu_funciones.add_command(label = "Division", command = divide)
 
-barra_menus.add_cascade( menu = menu_filtros, label = "Funciones")
+barra_menus.add_cascade( menu = menu_filtros, label = "Opciones")
 menu_filtros.add_command(label = "Promedio", command = filtro_promedio)
+menu_filtros.add_command(label = "Ecualizar", command = ecualizar)
+menu_filtros.add_command(label = "Ecualizar color", command = ecu_color)
+menu_filtros.add_command(label = "Camara", command = camara)
 
 vn.config(menu = barra_menus)
 img_in = Label(vn)
