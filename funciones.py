@@ -197,3 +197,21 @@ def camara_web():
     video.release()
     cv2.destroyAllWindows()
     return frame
+
+def conteo(img, h, w):
+    counter = 0
+    lst = []
+    for i in range(0, h):
+        for j in range(0, w):
+            if(img[i, j] != 0):
+                img[i,j] = 0
+                counter += 1
+                lst.append([i,j])
+                while(len(lst) > 0):
+                    a = lst.pop(0)
+                    for ii in range(a[0] - 1, a[0] + 2):
+                        for jj in range(a[1] - 1, a[1] + 2):
+                            if(img[ii, jj] != 0):
+                                lst.append([ii,jj])
+                                img[ii, jj] = 0
+    return counter

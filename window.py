@@ -118,6 +118,18 @@ def camara():
     img = fn.camara_web()
     show_in(img)
 
+def count():
+    global img
+    h, w, c = img.shape
+    n = int(val.get())
+    out = fn.binaria(img, h, w, n)
+    kernel = np.ones((3,3), np.uint8)
+    out = cv2.erode(out, kernel, iterations=1)
+    show_out(out)
+    counter = fn.conteo(out, h, w)
+    print( "N Objetos = " + str(counter))
+
+
 vn = tk.Tk()
 vn.title("Vision - Maestria")
 vn.geometry("1000x600")
@@ -143,6 +155,7 @@ menu_filtros.add_command(label = "Promedio", command = filtro_promedio)
 menu_filtros.add_command(label = "Ecualizar", command = ecualizar)
 menu_filtros.add_command(label = "Ecualizar color", command = ecu_color)
 menu_filtros.add_command(label = "Camara", command = camara)
+menu_filtros.add_command(label = "Conteo de objetos", command = count)
 
 vn.config(menu = barra_menus)
 img_in = Label(vn)
